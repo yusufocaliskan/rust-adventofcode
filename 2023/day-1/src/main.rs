@@ -84,10 +84,20 @@ fn find_num_in_text(raw_text: String) -> Vec<String> {
     let re = Regex::new(r"\d|one|two|three|four|five|six|seven|eight|nine").unwrap();
 
     let mut result = vec![];
+    // println!("re.iterr--> {:?}", re.find_iter(&raw_text));
     for mat in re.find_iter(&raw_text) {
-        // println!("Found: {} at index {:?}", mat.as_str(), mat.start());
+        // println!(
+        //     "{} Found: {} at index {:?}",
+        //     raw_text,
+        //     mat.as_str(),
+        //     mat.start()
+        // );
         result.push(mat.as_str().to_string());
     }
+    if result.is_empty() {
+        result.push("0".to_string())
+    }
+
     result
 }
 
@@ -132,16 +142,35 @@ fn get_first_and_last_digits(digits: Vec<i32>) -> i32 {
 //find text nums in string
 #[test]
 fn test_find_num_in_text() {
-    let result = find_num_in_text(String::from("sq5fivetwothree1"));
-    println!("Raw String --> sq5fivetwothree1",);
-    println!("Result --> {:?}", result);
-    // assert_eq!(result, ["five", "two", "three"]);
+    let test_data: Vec<(&str, Vec<&str>)> = vec![
+        ("two1nine", vec!["two", "1", "nine"]),
+        ("eightwothree", vec!["eight", "three"]),
+        ("abcone2threexyz", vec!["one", "2", "three"]),
+        ("xtwone3four", vec!["two", "3", "four"]),
+        ("4nineeightseven2", vec!["4", "nine", "eight", "seven", "2"]),
+        ("zoneight234", vec!["one", "2", "3", "4"]),
+        ("7pqrstsixteen", vec!["7", "six"]),
+        ("no digits", vec!["0"]),
+    ];
+
+    for data in test_data {
+        let test_num = data.0;
+        let expected_data = data.1;
+
+        let result = find_num_in_text(String::from(test_num));
+        println!(
+            "Raw String: {} Expected: {:?} Result {:?}",
+            test_num, expected_data, result
+        );
+        assert_eq!(result, expected_data);
+    }
 }
 
 /// text num to digits
 #[test]
 fn test_text_num_to_digit() {
     let text_to_num = find_num_in_text(String::from("sq5fivetwothree1"));
+
     /// vec!["5", "two", "nine", "two", "1"]
     println!("Result -> {:?}", text_to_num);
     let result = text_num_to_digit(text_to_num);
